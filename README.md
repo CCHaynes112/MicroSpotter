@@ -16,7 +16,7 @@ To run this app, you will need:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/cchaynes112/microspotter.git
+git clone https://github.com/CCHaynes112/MicroSpotter.git
 cd microspotter
 ```
 
