@@ -9,17 +9,18 @@ import { Close, Upload, CheckCircle } from '@mui/icons-material';
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#1e40af', // Darker blue
+            main: '#006d77', // Teal
         },
         secondary: {
-            main: '#3b82f6', // Bright blue
+            main: '#83c5be', // Light teal
         },
         background: {
-            default: '#0c324b', // Very light blue
+            default: '#001524', // Deep sea blue
+            paper: '#edf6f9', // Very light blue
         },
         text: {
-            primary: '#1e3a8a', // Navy blue
-            secondary: '#64748b', // Slate blue
+            primary: '#006d77', // Teal
+            secondary: '#457b9d', // Steel blue
         },
     },
 });
@@ -133,6 +134,8 @@ export default function Home() {
     useEffect(() => {
         const count = Object.keys(uploadedImages).length;
         setSpottedCount(count);
+        // Save uploaded images to local storage
+        localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
     }, [uploadedImages]);
 
     const handleCardClick = (organism: Microorganism) => {
@@ -176,17 +179,17 @@ export default function Home() {
         <ThemeProvider theme={theme}>
             <Box sx={{
                 minHeight: '100vh',
-                background: 'linear-gradient(to bottom, #bfdbfe, #f0f9ff)', // Light blue gradient
+                background: 'linear-gradient(to bottom, #001524, #006d77)', // Deep sea gradient
                 py: 6,
                 px: 2
             }}>
                 <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
-                    <Typography variant="h2" component="h1" sx={{ color: '#1e3a8a', mb: 4, textAlign: 'center', fontWeight: 'bold' }}>
+                    <Typography variant="h2" component="h1" sx={{ color: '#83c5be', mb: 4, textAlign: 'center', fontWeight: 'bold' }}>
                         MicroSpotter
                     </Typography>
-                    <Box sx={{ mb: 4, bgcolor: 'white', p: 2, borderRadius: 2, boxShadow: 1 }}>
-                        <LinearProgress variant="determinate" value={(spottedCount / microorganisms.length) * 100} sx={{ height: 10, borderRadius: 5, backgroundColor: '#e2e8f0', '& .MuiLinearProgress-bar': { backgroundColor: '#3b82f6' } }} />
-                        <Typography variant="body1" sx={{ mt: 1, fontWeight: 'bold', color: '#1e3a8a' }}>
+                    <Box sx={{ mb: 4, bgcolor: 'background.paper', p: 2, borderRadius: 2, boxShadow: 1 }}>
+                        <LinearProgress variant="determinate" value={(spottedCount / microorganisms.length) * 100} sx={{ height: 10, borderRadius: 5, backgroundColor: '#83c5be', '& .MuiLinearProgress-bar': { backgroundColor: '#006d77' } }} />
+                        <Typography variant="body1" sx={{ mt: 1, fontWeight: 'bold', color: 'text.primary' }}>
                             Microorganisms Spotted: {spottedCount} / {microorganisms.length}
                         </Typography>
                     </Box>
@@ -206,7 +209,7 @@ export default function Home() {
                                         width: '100%',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        bgcolor: '#f0f9ff', // Very light blue
+                                        bgcolor: 'background.paper',
                                     }}
                                     onClick={() => handleCardClick(organism)}
                                 >
@@ -230,7 +233,7 @@ export default function Home() {
                                         />
                                     </Box>
                                     <CardContent sx={{ flexGrow: 1, p: 1.5 }}>
-                                        <Typography variant="h6" component="h2" sx={{ color: '#1e3a8a', fontWeight: 'bold', mb: 0.5 }}>
+                                        <Typography variant="h6" component="h2" sx={{ color: 'text.primary', fontWeight: 'bold', mb: 0.5 }}>
                                             {organism.name}
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary" sx={{
@@ -249,7 +252,7 @@ export default function Home() {
                                                 position: 'absolute',
                                                 top: 8,
                                                 right: 8,
-                                                bgcolor: '#3b82f6',
+                                                bgcolor: 'primary.main',
                                                 color: 'white',
                                                 borderRadius: '50%',
                                                 p: 0.5,
@@ -273,10 +276,10 @@ export default function Home() {
                 >
                     {selectedOrganism && (
                         <>
-                            <DialogTitle sx={{ bgcolor: '#3b82f6', color: 'white', fontWeight: 'bold' }}>
+                            <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 'bold' }}>
                                 {selectedOrganism.name}
                             </DialogTitle>
-                            <DialogContent sx={{ bgcolor: '#f0f9ff', p: 0, display: 'flex', flexDirection: 'column', height: '80vh' }}>
+                            <DialogContent sx={{ bgcolor: 'background.paper', p: 0, display: 'flex', flexDirection: 'column', height: '80vh' }}>
                                 <Box sx={{ position: 'relative', height: '60%', overflow: 'hidden' }}>
                                     <img
                                         src={uploadedImages[selectedOrganism.name] || selectedOrganism.image}
@@ -285,7 +288,7 @@ export default function Home() {
                                             width: '100%',
                                             height: '100%',
                                             objectFit: 'contain',
-                                            backgroundColor: '#e2e8f0'
+                                            backgroundColor: '#83c5be'
                                         }}
                                     />
                                     {uploadedImages[selectedOrganism.name] && (
@@ -298,10 +301,10 @@ export default function Home() {
                                     )}
                                 </Box>
                                 <Box sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-                                    <Typography variant="body1" sx={{ mb: 2, color: '#1e3a8a' }}>{selectedOrganism.description}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Habitat:</strong> {selectedOrganism.habitat}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Size:</strong> {selectedOrganism.size}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Fun Fact:</strong> {selectedOrganism.funFact}</Typography>
+                                    <Typography variant="body1" sx={{ mb: 2, color: 'text.primary' }}>{selectedOrganism.description}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}><strong>Habitat:</strong> {selectedOrganism.habitat}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}><strong>Size:</strong> {selectedOrganism.size}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}><strong>Fun Fact:</strong> {selectedOrganism.funFact}</Typography>
                                     <Box sx={{ mt: 'auto' }}>
                                         <Input
                                             type="file"
@@ -316,10 +319,11 @@ export default function Home() {
                                                 component="span"
                                                 startIcon={<Upload />}
                                                 sx={{
-                                                    bgcolor: '#3b82f6',
-                                                    color: 'white',
+                                                    bgcolor: 'secondary.main',
+                                                    color: 'text.primary',
                                                     '&:hover': {
-                                                        bgcolor: '#2563eb',
+                                                        bgcolor: 'primary.main',
+                                                        color: 'white',
                                                     },
                                                 }}
                                             >
@@ -329,15 +333,16 @@ export default function Home() {
                                     </Box>
                                 </Box>
                             </DialogContent>
-                            <DialogActions sx={{ bgcolor: '#f0f9ff' }}>
+                            <DialogActions sx={{ bgcolor: 'background.paper' }}>
                                 <Button
                                     onClick={() => setIsModalOpen(false)}
                                     variant="contained"
                                     sx={{
-                                        bgcolor: '#1e40af',
+                                        bgcolor: 'primary.main',
                                         color: 'white',
                                         '&:hover': {
-                                            bgcolor: '#1e3a8a',
+                                            bgcolor: 'secondary.main',
+                                            color: 'text.primary',
                                         },
                                     }}
                                 >
