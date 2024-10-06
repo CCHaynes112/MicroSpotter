@@ -15,7 +15,7 @@ const theme = createTheme({
             main: '#3b82f6', // Bright blue
         },
         background: {
-            default: '#f0f9ff', // Very light blue
+            default: '#0c324b', // Very light blue
         },
         text: {
             primary: '#1e3a8a', // Navy blue
@@ -117,10 +117,18 @@ const microorganisms: Microorganism[] = [
 ];
 
 export default function Home() {
-    const [selectedOrganism, setSelectedOrganism] = useState(null as Microorganism | null);
+    const [selectedOrganism, setSelectedOrganism] = useState<Microorganism | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [uploadedImages, setUploadedImages] = useState({} as Record<string, string>);
+    const [uploadedImages, setUploadedImages] = useState<Record<string, string>>({});
     const [spottedCount, setSpottedCount] = useState(0);
+
+    useEffect(() => {
+        // Load uploaded images from local storage
+        const storedImages = localStorage.getItem('uploadedImages');
+        if (storedImages) {
+            setUploadedImages(JSON.parse(storedImages));
+        }
+    }, []);
 
     useEffect(() => {
         const count = Object.keys(uploadedImages).length;
@@ -132,15 +140,21 @@ export default function Home() {
         setIsModalOpen(true);
     };
 
-    const handleFileUpload = (event: any) => {
-        const file = event.target.files[0];
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
         if (file && selectedOrganism) {
             const reader = new FileReader();
-            reader.onload = (e: any) => {
-                setUploadedImages(prev => ({
-                    ...prev,
-                    [selectedOrganism.name]: e.target.result
-                }));
+            reader.onload = (e: ProgressEvent<FileReader>) => {
+                const result = e.target?.result as string;
+                setUploadedImages(prev => {
+                    const newImages = {
+                        ...prev,
+                        [selectedOrganism.name]: result
+                    };
+                    // Save to local storage
+                    localStorage.setItem('uploadedImages', JSON.stringify(newImages));
+                    return newImages;
+                });
             };
             reader.readAsDataURL(file);
         }
@@ -151,6 +165,8 @@ export default function Home() {
             setUploadedImages(prev => {
                 const newImages = { ...prev };
                 delete newImages[selectedOrganism.name];
+                // Update local storage
+                localStorage.setItem('uploadedImages', JSON.stringify(newImages));
                 return newImages;
             });
         }
@@ -255,16 +271,16 @@ export default function Home() {
                     maxWidth="md"
                     fullWidth
                 >
-                    {selectedOrganism ?
+                    {selectedOrganism && (
                         <>
                             <DialogTitle sx={{ bgcolor: '#3b82f6', color: 'white', fontWeight: 'bold' }}>
-                                {selectedOrganism?.name}
+                                {selectedOrganism.name}
                             </DialogTitle>
                             <DialogContent sx={{ bgcolor: '#f0f9ff', p: 0, display: 'flex', flexDirection: 'column', height: '80vh' }}>
                                 <Box sx={{ position: 'relative', height: '60%', overflow: 'hidden' }}>
                                     <img
-                                        src={uploadedImages[selectedOrganism?.name] || selectedOrganism?.image}
-                                        alt={selectedOrganism?.name}
+                                        src={uploadedImages[selectedOrganism.name] || selectedOrganism.image}
+                                        alt={selectedOrganism.name}
                                         style={{
                                             width: '100%',
                                             height: '100%',
@@ -272,7 +288,7 @@ export default function Home() {
                                             backgroundColor: '#e2e8f0'
                                         }}
                                     />
-                                    {uploadedImages[selectedOrganism?.name] && (
+                                    {uploadedImages[selectedOrganism.name] && (
                                         <IconButton
                                             onClick={handleRemoveUpload}
                                             sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255, 255, 255, 0.7)' }}
@@ -282,10 +298,10 @@ export default function Home() {
                                     )}
                                 </Box>
                                 <Box sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-                                    <Typography variant="body1" sx={{ mb: 2, color: '#1e3a8a' }}>{selectedOrganism?.description}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Habitat:</strong> {selectedOrganism?.habitat}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Size:</strong> {selectedOrganism?.size}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Fun Fact:</strong> {selectedOrganism?.funFact}</Typography>
+                                    <Typography variant="body1" sx={{ mb: 2, color: '#1e3a8a' }}>{selectedOrganism.description}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Habitat:</strong> {selectedOrganism.habitat}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Size:</strong> {selectedOrganism.size}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}><strong>Fun Fact:</strong> {selectedOrganism.funFact}</Typography>
                                     <Box sx={{ mt: 'auto' }}>
                                         <Input
                                             type="file"
@@ -307,7 +323,7 @@ export default function Home() {
                                                     },
                                                 }}
                                             >
-                                                {uploadedImages[selectedOrganism?.name] ? 'Update Image' : 'Upload Image'}
+                                                {uploadedImages[selectedOrganism.name] ? 'Update Image' : 'Upload Image'}
                                             </Button>
                                         </label>
                                     </Box>
@@ -329,7 +345,7 @@ export default function Home() {
                                 </Button>
                             </DialogActions>
                         </>
-                        : null}
+                    )}
                 </Dialog>
             </Box>
         </ThemeProvider>
